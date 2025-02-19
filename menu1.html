@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Menu Alla Griglia</title>
+  <style>
+    body {
+      background-color: #1a1a1a; /* Sfondo scuro */
+      color: #FFFFFF;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+      margin: 0;
+      padding: 5px;
+    }
+    h1 {
+      color: #FF0000; /* Rosso per il titolo principale */
+      font-size: 2em;
+    }
+    h2 {
+      color: #FFD700; /* Oro per il sottotitolo */
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 90%;
+      margin: auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #333;
+      color: #FF0000;
+    }
+    tr:nth-child(even) {
+      background-color: #2a2a2a;
+    }
+  </style>
+</head>
+<body>
+  <!-- I primi due record del CSV vengono usati come titolo e sottotitolo -->
+  <h1 id="mainTitle"></h1>
+  <h2 id="subTitle"></h2>
+  
+  <!-- Tabella dei piatti -->
+  <table id="menuTable">
+    <thead id="tableHead"></thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  
+  <script>
+    // Carica il file CSV "menu.csv" e genera la tabella
+    fetch('menu1.csv')
+      .then(response => response.text())
+      .then(data => {
+        // Dividi il contenuto in righe
+        const lines = data.trim().split('\n');
+        if(lines.length < 3) {
+          console.error("Il file CSV non contiene dati sufficienti.");
+          return;
+        }
+        
+        // I primi due record sono titolo e sottotitolo
+        document.getElementById('mainTitle').textContent = lines[0];
+        document.getElementById('subTitle').textContent = lines[1];
+        
+        // La terza riga contiene l'intestazione della tabella
+        const headerCells = lines[2].split(';');
+        let theadHTML = '<tr>';
+        headerCells.forEach(cell => {
+          theadHTML += '<th>' + cell + '</th>';
+        });
+        theadHTML += '</tr>';
+        document.getElementById('tableHead').innerHTML = theadHTML;
+        
+        // Le righe successive contengono i dati
+        let tbodyHTML = '';
+        for (let i = 3; i < lines.length; i++) {
+          if(lines[i].trim() === "") continue;
+          const cells = lines[i].split(';');
+          tbodyHTML += '<tr>';
+          cells.forEach(cell => {
+            tbodyHTML += '<td>' + cell + '</td>';
+          });
+          tbodyHTML += '</tr>';
+        }
+        document.getElementById('tableBody').innerHTML = tbodyHTML;
+      })
+      .catch(error => console.error('Errore nel caricamento del file CSV:', error));
+  </script>
+</body>
+</html>
